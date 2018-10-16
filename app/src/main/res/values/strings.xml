@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Pong Pong</string>
+    <string name="welcome_message">Welcome to: Pong Pong</string>
+
+    <string name="title_activity_pong">PongActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

@@ -1,5 +1,6 @@
 package fr.thatmuch.helloworld;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,17 +21,7 @@ public class MainActivity extends AppCompatActivity {
         // Get button
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener(){
-           public void onClick (View v) {
-               // Get date
-               Date currentTime = Calendar.getInstance().getTime();
-               // Format date to hh:mm:ss
-               SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-               // Format date to string
-               String output = dateFormat.format(currentTime);
-               // Get date text in view
-               TextView textDate = findViewById(R.id.date);
-               // Update date text in view
-               textDate.setText(output);
+           public void onClick (View v) {startActivity(new Intent(MainActivity.this, PongActivity.class));
            }
         });
 
