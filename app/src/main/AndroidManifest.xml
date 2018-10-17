@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PongActivity"/>
+            android:name=".PongActivity"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>
