@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -16,10 +14,12 @@ import android.view.View;
 public class PongView extends View implements View.OnTouchListener {
     Paint colorBlack;
     Paint colorWhite;
+    Paint text = new Paint();
     int colorPrimary;
     int colorPrimaryDark;
 
-
+    public int scorePlayer1;
+    public int scorePlayer2;
     public int canvasX = getContext().getResources().getDisplayMetrics().widthPixels;
     public int canvasY = getContext().getResources().getDisplayMetrics().heightPixels;
     public int ballX = 500;
@@ -46,6 +46,12 @@ public class PongView extends View implements View.OnTouchListener {
 
         colorPrimary = getResources().getColor(R.color.colorPrimary);
         colorPrimaryDark = getResources().getColor(R.color.colorPrimaryDark);
+
+        scorePlayer1 = 0;
+        scorePlayer2 = 0;
+        text.setColor(Color.WHITE);
+        text.setStyle(Paint.Style.FILL);
+        text.setTextSize(500);
     }
 
     // Dessiner la balle
@@ -53,10 +59,13 @@ public class PongView extends View implements View.OnTouchListener {
     public void onDraw(Canvas canvas) {
 
         canvas.drawColor(colorPrimary);
+        canvas.drawRect(( canvasX / 2 - 2 ), 0, ( canvasX / 2 + 2 ), canvasY, colorWhite);
         canvas.drawCircle(ballX, ballY, (float) ballRadius, colorWhite);
         canvas.drawRect(racketOneLeft, racketOneTop, racketOneRight , racketOneBottom, colorWhite);
         canvas.drawRect(racketTwoLeft, racketTwoTop, racketTwoRight , racketTwoBottom, colorWhite);
 
+        canvas.drawText(String.valueOf(scorePlayer1),(canvasX / 2 - 100), 50, colorWhite );
+        canvas.drawText(String.valueOf(scorePlayer2),(canvasX / 2 + 100), 50, colorWhite );
         moveBall();
     }
 
@@ -97,6 +106,16 @@ public class PongView extends View implements View.OnTouchListener {
                 ){
             speedX = -speedX;
             speedX += 10;
+        }
+
+        if(ballX < 0){
+            scorePlayer1++;
+            System.out.println(scorePlayer1);
+        }
+        if(ballX + ballRadius > canvasX){
+            scorePlayer2++;
+            System.out.println("Score Player 2 :" + scorePlayer2);
+
         }
 
         invalidate();
