@@ -10,9 +10,8 @@ public class PongActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        TextView myText = new TextView(this);
-        myText.setText("Toto");
-        setContentView(myText);
+        PongView myPongView;
+        myPongView = new PongView(this);
+        setContentView(myPongView);
     }
 }
