@@ -1,11 +1,15 @@
 package fr.thatmuch.helloworld;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
+
+import java.io.IOException;
 
 /**
  * Created by marconte on 16/10/2018.
@@ -15,22 +19,28 @@ public class PongView extends View implements View.OnTouchListener {
     Paint colorBlack;
     Paint colorWhite;
     Paint text = new Paint();
-    int colorPrimary;
-    int colorPrimaryDark;
 
+    MediaPlayer mediaPlayer = new MediaPlayer();
+
+    public int colorPrimary;
+    public int colorPrimaryDark;
+    public int colorAccent;
+    public int colorOverlay;
+    public int canvasColor;
     public int scorePlayer1;
     public int scorePlayer2;
     public int canvasX = getContext().getResources().getDisplayMetrics().widthPixels;
     public int canvasY = getContext().getResources().getDisplayMetrics().heightPixels;
     public int ballX = canvasX / 2;
     public int ballY = canvasY / 2;
-    public int speedX = 8;
-    public int speedY = 10;
-    public int ballRadius = 30;
+    public int speedX = 10;
+    public int speedY = 12;
+    public float ballRadius = (canvasX * (float)1.5) / 100;
     public float racketOneTop = 0;
     public float racketOneBottom = (float)(canvasY * 24) / 100 ;
     public float racketOneLeft = (float)(canvasX * 3) / 100;
     public float racketOneRight = (float)(canvasX * 5) / 100;
+
     public float racketTwoTop = (float)(canvasY * 76) / 100;
     public float racketTwoBottom = (float) canvasY;
     public float racketTwoLeft = (float)(canvasX * 95) / 100;
@@ -46,33 +56,56 @@ public class PongView extends View implements View.OnTouchListener {
 
         colorPrimary = getResources().getColor(R.color.colorPrimary);
         colorPrimaryDark = getResources().getColor(R.color.colorPrimaryDark);
+        colorAccent = getResources().getColor(R.color.colorAccent);
+        colorOverlay = getResources().getColor(R.color.black_overlay);
+        canvasColor = colorOverlay;
 
         scorePlayer1 = 0;
         scorePlayer2 = 0;
+
         text.setColor(Color.WHITE);
         text.setTextSize(80);
+        initSound();
     }
 
     // Dessiner la balle
     @Override
     public void onDraw(Canvas canvas) {
 
-        canvas.drawColor(colorPrimary);
+        canvas.drawColor(canvasColor);
         canvas.drawRect(( canvasX / 2 - 2 ), 0, ( canvasX / 2 + 2 ), canvasY, colorWhite);
-        canvas.drawCircle(ballX, ballY, (float) ballRadius, colorWhite);
+        canvas.drawCircle(ballX, ballY, ballRadius, colorWhite);
         canvas.drawRect(racketOneLeft, racketOneTop, racketOneRight , racketOneBottom, colorWhite);
-        canvas.drawRect(racketTwoLeft, racketTwoTop, racketTwoRight , racketTwoBottom, colorBlack);
+        canvas.drawRect(racketTwoLeft, racketTwoTop, racketTwoRight , racketTwoBottom, colorWhite);
 
-        canvas.drawText(String.valueOf(scorePlayer1),(canvasX / 2 - 100), 80, text );
-        canvas.drawText(String.valueOf(scorePlayer2),(canvasX / 2 + 100), 80, text );
+        canvas.drawText(String.valueOf(scorePlayer1),(canvasX / 2 - 250), 100, text );
+        canvas.drawText(String.valueOf(scorePlayer2),(canvasX / 2 + 200), 100, text );
         moveBall();
     }
 
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        moveRacket(event.getX(), event.getY());
+        int touchs = event.getPointerCount();
+        for(int i = 0; i < touchs; i++){
+            moveRacket(event.getX(i), event.getY(i));
+        }
+
         return true;
+    }
+
+    public void initSound(){
+        try {
+            mediaPlayer.reset();
+            AssetFileDescriptor afd;
+            afd = getContext().getAssets().openFd("NFF-blip.wav");
+            mediaPlayer.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+            mediaPlayer.prepare();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Déplacement de la balle
@@ -92,6 +125,7 @@ public class PongView extends View implements View.OnTouchListener {
                 (ballY - ballRadius > racketOneTop &&
                 ballY + ballRadius < racketOneBottom)
         ){
+            mediaPlayer.start();
             speedX = -speedX;
             speedX++;
         }
@@ -103,25 +137,23 @@ public class PongView extends View implements View.OnTouchListener {
                 (ballY + ballRadius > racketTwoTop &&
                 ballY - ballRadius < racketTwoBottom)
                 ){
+            mediaPlayer.start();
             speedX = -speedX;
             speedX++;
-            System.out.println("Ta race");
         }
 
         if(ballX < 0){
+            canvasColor = colorPrimary;
             scorePlayer1++;
-            System.out.println(scorePlayer1);
             reset();
         }
         if(ballX + ballRadius > canvasX){
+            canvasColor = colorAccent;
             scorePlayer2++;
-            System.out.println("Score Player 2 :" + scorePlayer2);
+
             reset();
 
         }
-
-
-
         invalidate();
     }
 
@@ -143,6 +175,15 @@ public class PongView extends View implements View.OnTouchListener {
         ballX = canvasX / 2;
         ballY = canvasY / 2;
         speedX = -speedX;
+    }
+
+    public void endGame(){
+        if(scorePlayer1 == 10) {
+            System.out.println("Player 1 wins !");
+        }
+        if(scorePlayer2 == 10) {
+            System.out.println("Player 2 wins !");
+        }
     }
 
 
