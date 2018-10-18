@@ -22,8 +22,8 @@ public class PongView extends View implements View.OnTouchListener {
     public int scorePlayer2;
     public int canvasX = getContext().getResources().getDisplayMetrics().widthPixels;
     public int canvasY = getContext().getResources().getDisplayMetrics().heightPixels;
-    public int ballX = 500;
-    public int ballY = 500;
+    public int ballX = canvasX / 2;
+    public int ballY = canvasY / 2;
     public int speedX = 8;
     public int speedY = 10;
     public int ballRadius = 30;
@@ -50,8 +50,7 @@ public class PongView extends View implements View.OnTouchListener {
         scorePlayer1 = 0;
         scorePlayer2 = 0;
         text.setColor(Color.WHITE);
-        text.setStyle(Paint.Style.FILL);
-        text.setTextSize(500);
+        text.setTextSize(80);
     }
 
     // Dessiner la balle
@@ -62,10 +61,10 @@ public class PongView extends View implements View.OnTouchListener {
         canvas.drawRect(( canvasX / 2 - 2 ), 0, ( canvasX / 2 + 2 ), canvasY, colorWhite);
         canvas.drawCircle(ballX, ballY, (float) ballRadius, colorWhite);
         canvas.drawRect(racketOneLeft, racketOneTop, racketOneRight , racketOneBottom, colorWhite);
-        canvas.drawRect(racketTwoLeft, racketTwoTop, racketTwoRight , racketTwoBottom, colorWhite);
+        canvas.drawRect(racketTwoLeft, racketTwoTop, racketTwoRight , racketTwoBottom, colorBlack);
 
-        canvas.drawText(String.valueOf(scorePlayer1),(canvasX / 2 - 100), 50, colorWhite );
-        canvas.drawText(String.valueOf(scorePlayer2),(canvasX / 2 + 100), 50, colorWhite );
+        canvas.drawText(String.valueOf(scorePlayer1),(canvasX / 2 - 100), 80, text );
+        canvas.drawText(String.valueOf(scorePlayer2),(canvasX / 2 + 100), 80, text );
         moveBall();
     }
 
@@ -94,29 +93,34 @@ public class PongView extends View implements View.OnTouchListener {
                 ballY + ballRadius < racketOneBottom)
         ){
             speedX = -speedX;
-            speedX += 10;
+            speedX++;
         }
 
         // Rebond sur la raquette de droite (Player 2)
         if(
                 (ballX + ballRadius < racketTwoRight &&
                  ballX + ballRadius > racketTwoLeft) &&
-                (ballY + ballRadius < racketTwoTop &&
-                ballY - ballRadius > racketTwoBottom)
+                (ballY + ballRadius > racketTwoTop &&
+                ballY - ballRadius < racketTwoBottom)
                 ){
             speedX = -speedX;
-            speedX += 10;
+            speedX++;
+            System.out.println("Ta race");
         }
 
         if(ballX < 0){
             scorePlayer1++;
             System.out.println(scorePlayer1);
+            reset();
         }
         if(ballX + ballRadius > canvasX){
             scorePlayer2++;
             System.out.println("Score Player 2 :" + scorePlayer2);
+            reset();
 
         }
+
+
 
         invalidate();
     }
@@ -133,6 +137,12 @@ public class PongView extends View implements View.OnTouchListener {
             racketTwoTop = touchY - racketTwoHalf;
             racketTwoBottom = touchY + racketTwoHalf;
         }
+    }
+
+    public void reset(){
+        ballX = canvasX / 2;
+        ballY = canvasY / 2;
+        speedX = -speedX;
     }
 
 
