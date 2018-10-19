@@ -6,10 +6,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
+import android.os.Build;
+import android.os.VibrationEffect;
 import android.view.MotionEvent;
 import android.view.View;
+import android.os.Vibrator;
 
 import java.io.IOException;
+
+import static android.content.Context.VIBRATOR_SERVICE;
 
 /**
  * Created by marconte on 16/10/2018.
@@ -21,7 +26,6 @@ public class PongView extends View implements View.OnTouchListener {
     Paint text = new Paint();
 
     MediaPlayer mediaPlayer = new MediaPlayer();
-
     public int colorPrimary;
     public int colorPrimaryDark;
     public int colorAccent;
@@ -108,6 +112,14 @@ public class PongView extends View implements View.OnTouchListener {
         }
     }
 
+    private void shakeIt() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            ((Vibrator) getContext().getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            ((Vibrator) getContext().getSystemService(VIBRATOR_SERVICE)).vibrate(500);
+        }
+    }
+
     // Déplacement de la balle
     public void moveBall(){
         ballX += speedX;
@@ -126,6 +138,7 @@ public class PongView extends View implements View.OnTouchListener {
                 ballY + ballRadius < racketOneBottom)
         ){
             mediaPlayer.start();
+            shakeIt();
             speedX = -speedX;
             speedX++;
         }
@@ -138,6 +151,7 @@ public class PongView extends View implements View.OnTouchListener {
                 ballY - ballRadius < racketTwoBottom)
                 ){
             mediaPlayer.start();
+            shakeIt();
             speedX = -speedX;
             speedX++;
         }
